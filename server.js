@@ -7,15 +7,13 @@ const rateLimit = require('express-rate-limit');
 const morgan = require('morgan');
 const connectDB = require('./config/db');
 const app = express();
-
-// Lista actualizada de origins permitidos
 const allowedOrigins = [
-  'https://ephemeral-halva-d34024.netlify.app',   
+  'https://ephemeral-halva-d34024.netlify.app',
   'https://elegant-mochi-89847d.netlify.app',
   'http://localhost:3000',
   'http://localhost:3001',
   'http://127.0.0.1:3000',
-  'http://127.0.0.1:5500', 
+  'http://127.0.0.1:5500',
   'http://localhost:5500',
   'http://192.168.1.7:3000',
   'http://192.168.1.7:5500'
@@ -23,17 +21,30 @@ const allowedOrigins = [
 
 // Configuración alternativa más simple
 const corsOptions = {
-  origin: allowedOrigins,
+  // Usa una función para manejar dinámicamente el origen permitido
+  origin: (origin, callback) => {
+    // Permite solicitudes sin origen (como apps móviles o curl)
+    // y solicitudes de los orígenes permitidos.
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      // Opcional: loguear los orígenes bloqueados para depuración
+      console.warn(`🚫 CORS Bloqueado: Origen ${origin} no permitido.`);
+      callback(new Error('No permitido por CORS'));
+    }
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin']
 };
+
 app.use((req, res, next) => {
   console.log(`📡 ${req.method} ${req.path} - Origin: ${req.headers.origin}`);
   next();
 });
 
 app.use(cors(corsOptions));
+
 
 app.use(helmet({
   contentSecurityPolicy: false,
