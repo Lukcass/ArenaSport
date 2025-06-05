@@ -17,7 +17,7 @@ const corsOptions = {
     if (!origin) return callback(null, true);
     
     const allowedOrigins = [
-      'https://elegant-mochi-89847d.netlify.app',
+      'ephemeral-halva-d34024.netlify.app',
       'http://localhost:3000',
       'http://localhost:3001'
     ];
