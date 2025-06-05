@@ -21,73 +21,19 @@ const allowedOrigins = [
   'http://192.168.1.7:5500'
 ];
 
+// Configuración alternativa más simple
 const corsOptions = {
-  origin: function (origin, callback) {
-    console.log(`🔍 CORS Debug - Origin recibido: ${origin}`);
-    
-    // Permitir requests sin origin (ej: aplicaciones móviles, Postman)
-    if (!origin) {
-      console.log('✅ Request sin origin permitido');
-      return callback(null, true);
-    }
-    
-    if (allowedOrigins.includes(origin)) {
-      console.log(`✅ CORS: Origin permitido: ${origin}`);
-      callback(null, true);
-    } else {
-      console.log(`❌ CORS: Origin NO permitido: ${origin}`);
-      console.log(`📋 Origins permitidos:`, allowedOrigins);
-      callback(new Error(`CORS: Origin ${origin} no está permitido`));
-    }
-  },
+  origin: allowedOrigins,
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: [
-    'Content-Type', 
-    'Authorization', 
-    'X-Requested-With',
-    'Accept',
-    'Origin'
-  ],
-  optionsSuccessStatus: 200
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin']
 };
-
-// Middleware para logging
 app.use((req, res, next) => {
   console.log(`📡 ${req.method} ${req.path} - Origin: ${req.headers.origin}`);
   next();
 });
 
-// Aplicar CORS ANTES del manejo manual de OPTIONS
 app.use(cors(corsOptions));
-
-// REMOVER o COMENTAR el manejo manual de preflight - CORS ya lo maneja
-/*
-app.options('*', (req, res) => {
-  console.log('🚀 Preflight request recibido para:', req.path);
-  console.log('🚀 Origin del preflight:', req.headers.origin);
-  
-  const origin = req.headers.origin;
-  
-  if (!origin || allowedOrigins.includes(origin)) {
-    if (origin) {
-      res.header('Access-Control-Allow-Origin', origin);
-    }
-    res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,PATCH,OPTIONS');
-    res.header('Access-Control-Allow-Headers', 'Content-Type,Authorization,X-Requested-With,Accept,Origin');
-    res.header('Access-Control-Allow-Credentials', 'true');
-    console.log('✅ Preflight aprobado para:', origin || 'sin origin');
-  } else {
-    console.log('❌ Preflight rechazado para:', origin);
-    return res.status(403).json({
-      success: false,
-      error: 'CORS: Origin no permitido'
-    });
-  }
-  
-  res.sendStatus(200);
-});
-*/
 
 app.use(helmet({
   contentSecurityPolicy: false,
@@ -117,8 +63,6 @@ const limiter = rateLimit({
 app.use(limiter);
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
-
-// Rutas
 const authRoutes = require('./routes/auth.routes');
 const userRoutes = require('./routes/user.routes');
 const canchaRoutes = require('./routes/cancha.routes');
@@ -156,8 +100,6 @@ app.get('/', (req, res) => {
     documentation: 'https://arenasport.onrender.com/api/health'
   });
 });
-
-// Manejo de errores mejorado
 app.use((err, req, res, next) => {
   console.error('Error:', err.message);
   
