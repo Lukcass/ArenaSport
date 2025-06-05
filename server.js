@@ -8,22 +8,24 @@ const morgan = require('morgan');
 const connectDB = require('./config/db');
 const app = express();
 
-// ✅ CONFIGURACIÓN CORS CENTRALIZADA
+// Lista actualizada de origins permitidos
 const allowedOrigins = [
-  'https://ephemeral-halva-d34024.netlify.app',    
-  'https://elegant-mochi-89847d.netlify.app',  // ✅ Agregado aquí también
+  'https://ephemeral-halva-d34024.netlify.app',   
+  'https://elegant-mochi-89847d.netlify.app',
   'http://localhost:3000',
   'http://localhost:3001',
   'http://127.0.0.1:3000',
   'http://127.0.0.1:5500', 
-  'http://localhost:5500'
+  'http://localhost:5500',
+  'http://192.168.1.7:3000',
+  'http://192.168.1.7:5500'
 ];
 
 const corsOptions = {
   origin: function (origin, callback) {
     console.log(`🔍 CORS Debug - Origin recibido: ${origin}`);
     
-    // Permitir requests sin origin (como Postman, apps móviles)
+    // Permitir requests sin origin (ej: aplicaciones móviles, Postman)
     if (!origin) {
       console.log('✅ Request sin origin permitido');
       return callback(null, true);
@@ -50,35 +52,42 @@ const corsOptions = {
   optionsSuccessStatus: 200
 };
 
-// Middleware de logging
+// Middleware para logging
 app.use((req, res, next) => {
   console.log(`📡 ${req.method} ${req.path} - Origin: ${req.headers.origin}`);
   next();
 });
 
-// ✅ APLICAR CORS MIDDLEWARE
+// Aplicar CORS ANTES del manejo manual de OPTIONS
 app.use(cors(corsOptions));
 
-// ✅ HANDLER PREFLIGHT SIMPLIFICADO Y CORREGIDO
+// REMOVER o COMENTAR el manejo manual de preflight - CORS ya lo maneja
+/*
 app.options('*', (req, res) => {
   console.log('🚀 Preflight request recibido para:', req.path);
   console.log('🚀 Origin del preflight:', req.headers.origin);
   
   const origin = req.headers.origin;
   
-  if (allowedOrigins.includes(origin)) {
-    res.header('Access-Control-Allow-Origin', origin);
+  if (!origin || allowedOrigins.includes(origin)) {
+    if (origin) {
+      res.header('Access-Control-Allow-Origin', origin);
+    }
     res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,PATCH,OPTIONS');
     res.header('Access-Control-Allow-Headers', 'Content-Type,Authorization,X-Requested-With,Accept,Origin');
     res.header('Access-Control-Allow-Credentials', 'true');
-    console.log('✅ Preflight aprobado para:', origin);
+    console.log('✅ Preflight aprobado para:', origin || 'sin origin');
   } else {
     console.log('❌ Preflight rechazado para:', origin);
-    // ✅ No establecer headers si el origin no está permitido
+    return res.status(403).json({
+      success: false,
+      error: 'CORS: Origin no permitido'
+    });
   }
   
   res.sendStatus(200);
 });
+*/
 
 app.use(helmet({
   contentSecurityPolicy: false,
@@ -148,7 +157,7 @@ app.get('/', (req, res) => {
   });
 });
 
-// ✅ MIDDLEWARE DE MANEJO DE ERRORES MEJORADO
+// Manejo de errores mejorado
 app.use((err, req, res, next) => {
   console.error('Error:', err.message);
   
