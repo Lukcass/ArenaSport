@@ -12,8 +12,7 @@ const app = express();
 app.set('trust proxy', 1);
 
 const allowedOrigins = [
-  'https://ephemeral-halva-d34024.netlify.app',
-  'https://elegant-mochi-89847d.netlify.app',
+  'https://zesty-wisp-90c4ff.netlify.app',
   'http://localhost:3000',
   'http://localhost:3001',
   'http://127.0.0.1:3000',
@@ -189,7 +188,7 @@ const startServer = async () => {
         console.log(`🌐 URL: https://arenasport.onrender.com`);
         console.log(`🛡️ Entorno: ${process.env.NODE_ENV}`);
         console.log(`📊 Health: https://arenasport.onrender.com/api/health`);
-        console.log(`🎯 Frontend: https://ephemeral-halva-d34024.netlify.app`);
+        console.log(`🎯 Frontend: https://zesty-wisp-90c4ff.netlify.app`);
         console.log(`📋 Origins permitidos: ${allowedOrigins.join(', ')}`);
         console.log('\n✅ Sistema listo para producción\n');
       });
