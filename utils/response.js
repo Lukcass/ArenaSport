@@ -1,82 +1,49 @@
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-const sendResponse = (res, statusCode, success, message, data = null) => {
+const sendResponse = (res, statusCode, success, message, data = null, extra = {}) => {
   const response = {
     success,
-    timestamp: new Date().toISOString(),
     message,
-    ...(data && { data })
+    timestamp: new Date().toISOString(),
+    ...extra,
   };
-  return res.status(statusCode).json(response);
+  if (data !== null) {
+    response.data = data;
+  }
+  res.status(statusCode).json(response);
 };
 
 const responses = {
-  success: (res, message = 'Operación exitosa', data = null) => 
-    sendResponse(res, 200, true, message, data),
-    
-  created: (res, message = 'Recurso creado', data = null) => 
-    sendResponse(res, 201, true, message, data),
-    
-  badRequest: (res, message = 'Solicitud inválida') => 
-    sendResponse(res, 400, false, message),
-    
-  unauthorized: (res, message = 'No autorizado') => 
-    sendResponse(res, 401, false, message),
-    
-  forbidden: (res, message = 'Acceso denegado') => 
-    sendResponse(res, 403, false, message),
-    
-  notFound: (res, message = 'Recurso no encontrado') => 
-    sendResponse(res, 404, false, message),
-    
-  conflict: (res, message = 'Conflicto de recursos') => 
-    sendResponse(res, 409, false, message),
-    
-  serverError: (res, message = 'Error interno del servidor') => 
-    sendResponse(res, 500, false, message)
+  success: (res, message = 'Operación exitosa', data = null, extra = {}) =>
+    sendResponse(res, 200, true, message, data, extra),
+
+  created: (res, message = 'Recurso creado exitosamente', data = null, extra = {}) =>
+    sendResponse(res, 201, true, message, data, extra),
+
+  badRequest: (res, message = 'Solicitud inválida', data = null, extra = {}) =>
+    sendResponse(res, 400, false, message, data, extra),
+
+  unauthorized: (res, message = 'No autorizado', data = null, extra = {}) =>
+    sendResponse(res, 401, false, message, data, extra),
+
+  forbidden: (res, message = 'Acceso denegado', data = null, extra = {}) =>
+    sendResponse(res, 403, false, message, data, extra),
+
+  notFound: (res, message = 'Recurso no encontrado', data = null, extra = {}) =>
+    sendResponse(res, 404, false, message, data, extra),
+
+  serverError: (res, message = 'Error interno del servidor', data = null, extra = {}) => {
+    console.error('Internal Server Error:', message); // Log server errors
+    sendResponse(res, 500, false, message, data, extra);
+  },
+
+  // Puedes añadir más tipos de respuestas si es necesario
+  conflict: (res, message = 'Conflicto', data = null, extra = {}) =>
+    sendResponse(res, 409, false, message, data, extra),
+
+  unprocessableEntity: (res, message = 'Entidad no procesable', data = null, extra = {}) =>
+    sendResponse(res, 422, false, message, data, extra),
 };
 
-=======
->>>>>>> 69c64ed (mensaje descriptivo)
-const sendResponse = (res, statusCode, success, message, data = null) => {
-  const response = {
-    success,
-    timestamp: new Date().toISOString(),
-    message,
-    ...(data && { data })
-  };
-  return res.status(statusCode).json(response);
+module.exports = {
+  sendResponse,
+  responses,
 };
-
-const responses = {
-  success: (res, message = 'Operación exitosa', data = null) => 
-    sendResponse(res, 200, true, message, data),
-    
-  created: (res, message = 'Recurso creado', data = null) => 
-    sendResponse(res, 201, true, message, data),
-    
-  badRequest: (res, message = 'Solicitud inválida') => 
-    sendResponse(res, 400, false, message),
-    
-  unauthorized: (res, message = 'No autorizado') => 
-    sendResponse(res, 401, false, message),
-    
-  forbidden: (res, message = 'Acceso denegado') => 
-    sendResponse(res, 403, false, message),
-    
-  notFound: (res, message = 'Recurso no encontrado') => 
-    sendResponse(res, 404, false, message),
-    
-  conflict: (res, message = 'Conflicto de recursos') => 
-    sendResponse(res, 409, false, message),
-    
-  serverError: (res, message = 'Error interno del servidor') => 
-    sendResponse(res, 500, false, message)
-};
-
-<<<<<<< HEAD
-=======
->>>>>>> 112966f (Primer push con archivos organizados)
->>>>>>> 69c64ed (mensaje descriptivo)
-module.exports = { sendResponse, responses };

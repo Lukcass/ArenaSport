@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
 function validarEmail(email) {
   if (!email || typeof email !== 'string') {
     return 'El email es requerido';
@@ -58,8 +55,7 @@ module.exports = {
   validarUsername,
   validarNombre,
   validarRole
-=======
->>>>>>> 69c64ed (mensaje descriptivo)
+};
 function validarEmail(email) {
   if (!email || typeof email !== 'string') {
     return 'El email es requerido';
@@ -117,8 +113,4 @@ module.exports = {
   validarUsername,
   validarNombre,
   validarRole
-<<<<<<< HEAD
-=======
->>>>>>> 112966f (Primer push con archivos organizados)
->>>>>>> 69c64ed (mensaje descriptivo)
 };
