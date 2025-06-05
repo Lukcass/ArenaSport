@@ -1,6 +1,10 @@
+<<<<<<< HEAD
 const express = require('express');
 
 const router = express.Router();
+=======
+const express = require('express');const router = express.Router();
+>>>>>>> 69c64ed (mensaje descriptivo)
 const { 
   registerUser, 
   loginUser, 

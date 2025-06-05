@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+
+>>>>>>> 69c64ed (mensaje descriptivo)
 const express = require('express');
 const router = express.Router();
 const reservaController = require('../controllers/reserva.controller');

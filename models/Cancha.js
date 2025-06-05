@@ -132,5 +132,4 @@ canchaSchema.statics.obtenerOpciones = function() {
     dias: ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo']
   };
 };
-
 module.exports = mongoose.model('Cancha', canchaSchema);

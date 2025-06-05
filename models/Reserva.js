@@ -118,5 +118,4 @@ reservaSchema.virtual('precioFormateado').get(function() {
 
 reservaSchema.set('toJSON', { virtuals: true });
 reservaSchema.set('toObject', { virtuals: true });
-
 module.exports = mongoose.model('Reserva', reservaSchema);
