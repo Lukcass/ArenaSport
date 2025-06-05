@@ -7,6 +7,10 @@ const rateLimit = require('express-rate-limit');
 const morgan = require('morgan');
 const connectDB = require('./config/db');
 const app = express();
+
+// ✅ CONFIGURAR TRUST PROXY PARA RENDER
+app.set('trust proxy', 1);
+
 const allowedOrigins = [
   'https://ephemeral-halva-d34024.netlify.app',
   'https://elegant-mochi-89847d.netlify.app',
@@ -19,11 +23,10 @@ const allowedOrigins = [
   'http://192.168.1.7:5500'
 ];
 
-// Configuración alternativa más simple
+// ✅ CONFIGURACIÓN CORS MEJORADA
 const corsOptions = {
-  // Usa una función para manejar dinámicamente el origen permitido
   origin: (origin, callback) => {
-    // Permite solicitudes sin origen (como apps móviles o curl)
+    // Permite solicitudes sin origen (como health checks, postman, etc.)
     // y solicitudes de los orígenes permitidos.
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
@@ -45,7 +48,6 @@ app.use((req, res, next) => {
 
 app.use(cors(corsOptions));
 
-
 app.use(helmet({
   contentSecurityPolicy: false,
   crossOriginEmbedderPolicy: false
@@ -59,6 +61,7 @@ if (process.env.NODE_ENV === 'development') {
   app.use(morgan('combined'));
 }
 
+// ✅ RATE LIMITER CONFIGURADO CORRECTAMENTE PARA RENDER
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, 
   max: process.env.NODE_ENV === 'production' ? 100 : 1000,
@@ -69,11 +72,18 @@ const limiter = rateLimit({
   },
   standardHeaders: true,
   legacyHeaders: false,
+  // ✅ Configuración específica para proxies reversos como Render
+  trustProxy: true,
+  skip: (req) => {
+    // Omitir rate limiting para health checks
+    return req.path === '/api/health' || req.path === '/';
+  }
 });
 
 app.use(limiter);
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
 const authRoutes = require('./routes/auth.routes');
 const userRoutes = require('./routes/user.routes');
 const canchaRoutes = require('./routes/cancha.routes');
@@ -84,6 +94,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/canchas', canchaRoutes);
 app.use('/api/reservas', reservaRoutes);
 
+// ✅ HEALTH CHECK SIN CORS RESTRICTION
 app.get('/api/health', (req, res) => {
   res.json({
     success: true,
@@ -95,6 +106,7 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+// ✅ ROOT ENDPOINT SIN CORS RESTRICTION
 app.get('/', (req, res) => {
   res.json({
     success: true,
@@ -111,6 +123,7 @@ app.get('/', (req, res) => {
     documentation: 'https://arenasport.onrender.com/api/health'
   });
 });
+
 app.use((err, req, res, next) => {
   console.error('Error:', err.message);
   
